@@ -14,7 +14,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
@@ -37,9 +36,9 @@ public class ExpandableView extends LinearLayout implements View.OnClickListener
 
     private static final float DEFAULT_ANIM_ALPHA_START = 0f;
     private static final boolean DEFAULT_SHOW = true;
-    //    protected LinearLayout mTv;
     protected ImageButton mButton; // Button to expand/collapse
     private boolean mCollapsed = true; // Show short version as default.
+    private boolean isShow = true;// 是否显示全部
 
     private Drawable mExpandDrawable;
 
@@ -91,11 +90,9 @@ public class ExpandableView extends LinearLayout implements View.OnClickListener
     @Override
     public void onClick(View view) {
         if (!mAnimating) {
-
             mCollapsed = !mCollapsed;
             mButton.setImageDrawable(mCollapsed ? mExpandDrawable : mCollapseDrawable);
             mAnimating = true;
-//        Log.i("hah:",mCollapsed+"=getHeight="+getHeight()+"=mHeight="+mHeight+"=mMinHeight="+mMinHeight);
             Animation animation;
             if (mCollapsed) {
                 //false
@@ -108,16 +105,12 @@ public class ExpandableView extends LinearLayout implements View.OnClickListener
             animation.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
-//                applyAlphaAnimation(mTv, mAnimAlphaStart,mAnimationDuration);
                 }
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     clearAnimation();
                     mAnimating = false;
-                    if (mListener != null) {
-//                    mListener.onExpandStateChanged(mTv, !mCollapsed);
-                    }
                 }
 
                 @Override
@@ -187,7 +180,7 @@ public class ExpandableView extends LinearLayout implements View.OnClickListener
         mAnimAlphaStart = typedArray.getFloat(R.styleable.ExpandableView_animAlphaStart, DEFAULT_ANIM_ALPHA_START);
         mExpandDrawable = typedArray.getDrawable(R.styleable.ExpandableView_expandDrawable);
         mCollapseDrawable = typedArray.getDrawable(R.styleable.ExpandableView_collapseDrawable);
-        mCollapsed = typedArray.getBoolean(R.styleable.ExpandableView_viewTitleShow, DEFAULT_SHOW);
+        isShow = typedArray.getBoolean(R.styleable.ExpandableView_viewTitleShow, DEFAULT_SHOW);
         mTitleImage = typedArray.getDrawable(R.styleable.ExpandableView_viewTitleImage);
 
         if (mExpandDrawable == null) {
@@ -208,10 +201,10 @@ public class ExpandableView extends LinearLayout implements View.OnClickListener
             initTitleImage();
         }
         mTitlt = typedArray.getString(R.styleable.ExpandableView_viewTitle);
-//可以自行调节字体的大小,sp转px貌似很大啊,所以使用px转dp
+        //可以自行调节字体的大小,sp转px貌似很大啊,所以使用px转dp
         title_size = typedArray.getDimension(R.styleable.ExpandableView_viewTitleSize,
                 50);
-        title_size=DisplayUtil.px2dip(mContext, title_size);
+        title_size = DisplayUtil.px2dip(mContext, title_size);
         title_color = typedArray.getColor(R.styleable.ExpandableView_viewTitleColor, getResources().getColor(R.color.color_909090));
         line_color = typedArray.getColor(R.styleable.ExpandableView_viewTitleLineColor, getResources().getColor(R.color.color_bbbbbb));
         if (mTitlt != null) {
@@ -223,6 +216,41 @@ public class ExpandableView extends LinearLayout implements View.OnClickListener
         layoutParams.setMargins(0, DisplayUtil.dip2px(context, 10), 0, 0);
         setLayoutParams(layoutParams);
 
+        if (!isShow) {
+            // 默认折叠
+            addOnLayoutChangeListener(new OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(View view, int i, int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
+                    removeOnLayoutChangeListener(this);
+                    Animation animation;
+                    animation = new ExpandCollapseAnimation(ExpandableView.this, mHeight, mMinHeight);//suo
+                    animation.setFillAfter(true);
+                    animation.setDuration(0);
+                    animation.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            mAnimating = false;
+                            mCollapsed = false;
+                            if (mButton != null) {
+                                mButton.setImageDrawable(mCollapsed ? mExpandDrawable : mCollapseDrawable);
+                            }
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+
+                        }
+                    });
+                    clearAnimation();
+                    ExpandableView.this.startAnimation(animation);
+                }
+            });
+        }
     }
 
     /**
