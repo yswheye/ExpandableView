@@ -14,7 +14,7 @@
             android:layout_height="wrap_content"
             app:collapseDrawable="@drawable/arrow_right"
             app:expandDrawable="@drawable/arrow_down"
-            app:isCollapse="false"
+            app:isCollapse="true"
             app:titleHeight="60dp"
             app:titleName="标题1"
             app:viewTitleImage="@drawable/fwxinxi">
@@ -75,6 +75,33 @@
             app:isCollapse="true"
             app:titleHeight="60dp"
             app:titleName="标题3"
+            app:viewTitleImage="@drawable/fwxinxi">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#dddddd"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题"/>
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/fengjing"/>
+            </LinearLayout>
+        </com.limxing.expandableview.view.ExpandableView>
+
+        <com.limxing.expandableview.view.ExpandableView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:isCollapse="true"
+            app:titleHeight="60dp"
+            app:titleName="标题4"
             app:viewTitleImage="@drawable/fwxinxi">
 
             <LinearLayout

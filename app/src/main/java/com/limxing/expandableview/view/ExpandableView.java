@@ -190,13 +190,6 @@ public class ExpandableView extends LinearLayout implements View.OnClickListener
         isCollapsed = typedArray.getBoolean(R.styleable.ExpandableView_isCollapse, isCollapsed);
         mTitleImage = typedArray.getDrawable(R.styleable.ExpandableView_viewTitleImage);
 
-//        if (mExpandDrawable == null) {
-//            mExpandDrawable = getDrawable(getContext(), R.drawable.arrow_down);
-//        }
-//        if (mCollapseDrawable == null) {
-//            mCollapseDrawable = getDrawable(getContext(), R.drawable.arrow_right);
-//        }
-
         setOrientation(LinearLayout.VERTICAL);
         title = new RelativeLayout(context);
         int color = typedArray.getColor(R.styleable.ExpandableView_viewTitleBacColor, Color.WHITE);
