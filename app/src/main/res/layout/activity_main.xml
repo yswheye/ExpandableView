@@ -1,61 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:expandableView="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.limxing.expandableview.MainActivity">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    <com.limxing.expandableview.view.ExpandableView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        expandableView:viewTitle="我是标题"
-        expandableView:viewTitleSize="18sp"
-        expandableView:viewTitleShow="true"
-        expandableView:viewTitleImage="@drawable/fwxinxi">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <com.limxing.expandableview.view.ExpandableView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#ffffff"
-            android:orientation="vertical">
+            app:collapseDrawable="@drawable/arrow_right"
+            app:expandDrawable="@drawable/arrow_down"
+            app:isCollapse="false"
+            app:titleHeight="60dp"
+            app:titleName="标题1"
+            app:viewTitleImage="@drawable/fwxinxi">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题" />
-
-            <ImageView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:src="@drawable/fengjing" />
-        </LinearLayout>
-    </com.limxing.expandableview.view.ExpandableView>
+                android:background="#dddddd"
+                android:orientation="vertical">
 
-    <com.limxing.expandableview.view.ExpandableView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        expandableView:viewTitle="我是标题"
-        expandableView:viewTitleImage="@drawable/fwxinxi">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题"/>
 
-        <LinearLayout
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/fengjing"/>
+            </LinearLayout>
+        </com.limxing.expandableview.view.ExpandableView>
+
+        <com.limxing.expandableview.view.ExpandableView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#ffffff"
-            android:orientation="vertical">
+            app:collapseDrawable="@drawable/arrow_right"
+            app:expandDrawable="@drawable/arrow_down"
+            app:isCollapse="true"
+            app:titleHeight="60dp"
+            app:titleName="标题2"
+            app:viewTitleImage="@drawable/fwxinxi">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题" />
-
-            <ImageView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:src="@drawable/fengjing" />
-        </LinearLayout>
-    </com.limxing.expandableview.view.ExpandableView>
-</LinearLayout>
+                android:background="#dddddd"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题"/>
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/fengjing"/>
+            </LinearLayout>
+        </com.limxing.expandableview.view.ExpandableView>
+
+        <com.limxing.expandableview.view.ExpandableView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:collapseDrawable="@drawable/arrow_right"
+            app:expandDrawable="@drawable/arrow_down"
+            app:isCollapse="true"
+            app:titleHeight="60dp"
+            app:titleName="标题3"
+            app:viewTitleImage="@drawable/fwxinxi">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#dddddd"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题我是标题"/>
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/fengjing"/>
+            </LinearLayout>
+        </com.limxing.expandableview.view.ExpandableView>
+    </LinearLayout>
+</ScrollView>

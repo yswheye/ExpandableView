@@ -12,7 +12,9 @@ import android.os.Build;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,17 +33,15 @@ import com.limxing.expandableview.R;
 public class ExpandableView extends LinearLayout implements View.OnClickListener {
     private Context mContext;
 
-    private String mTitlt;
+    private String mTitleName;// title 标题
     private static final int DEFAULT_ANIM_DURATION = 300;
-
     private static final float DEFAULT_ANIM_ALPHA_START = 0f;
-    private static final boolean DEFAULT_SHOW = true;
-    protected ImageButton mButton; // Button to expand/collapse
+    protected ImageView mArrowImg; // Button to expand/collapse
+    private boolean displayArrow = true;
     private boolean mCollapsed = true; // Show short version as default.
-    private boolean isShow = true;// 是否显示全部
+    private boolean isCollapsed = true; // 是否折叠
 
     private Drawable mExpandDrawable;
-
     private Drawable mCollapseDrawable;
 
     private int mAnimationDuration;
@@ -49,6 +49,11 @@ public class ExpandableView extends LinearLayout implements View.OnClickListener
     private float mAnimAlphaStart;
 
     private boolean mAnimating;
+    /**
+     * custom
+     */
+    private float mTitleHeight = 50;//title height
+    private int mTitleLeftRightPadding = 35;// title左右边距
 
     /* Listener for callback */
     private OnExpandStateChangeListener mListener;
@@ -91,7 +96,7 @@ public class ExpandableView extends LinearLayout implements View.OnClickListener
     public void onClick(View view) {
         if (!mAnimating) {
             mCollapsed = !mCollapsed;
-            mButton.setImageDrawable(mCollapsed ? mExpandDrawable : mCollapseDrawable);
+            setTitleArrow();
             mAnimating = true;
             Animation animation;
             if (mCollapsed) {
@@ -105,12 +110,16 @@ public class ExpandableView extends LinearLayout implements View.OnClickListener
             animation.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
+//                applyAlphaAnimation(mTv, mAnimAlphaStart,mAnimationDuration);
                 }
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     clearAnimation();
                     mAnimating = false;
+                    if (mListener != null) {
+//                    mListener.onExpandStateChanged(mTv, !mCollapsed);
+                    }
                 }
 
                 @Override
@@ -120,7 +129,6 @@ public class ExpandableView extends LinearLayout implements View.OnClickListener
 
             clearAnimation();
             startAnimation(animation);
-
         }
     }
 
@@ -154,7 +162,6 @@ public class ExpandableView extends LinearLayout implements View.OnClickListener
             addFlag = true;
             child.measure(0, 0);
             childHeight = child.getMeasuredHeight();
-//            LogUtils.i(mHeight + "==child：" + childHeight);
             mHeight = mHeight + childHeight;
 
         }
@@ -180,43 +187,45 @@ public class ExpandableView extends LinearLayout implements View.OnClickListener
         mAnimAlphaStart = typedArray.getFloat(R.styleable.ExpandableView_animAlphaStart, DEFAULT_ANIM_ALPHA_START);
         mExpandDrawable = typedArray.getDrawable(R.styleable.ExpandableView_expandDrawable);
         mCollapseDrawable = typedArray.getDrawable(R.styleable.ExpandableView_collapseDrawable);
-        isShow = typedArray.getBoolean(R.styleable.ExpandableView_viewTitleShow, DEFAULT_SHOW);
+        isCollapsed = typedArray.getBoolean(R.styleable.ExpandableView_isCollapse, isCollapsed);
         mTitleImage = typedArray.getDrawable(R.styleable.ExpandableView_viewTitleImage);
 
-        if (mExpandDrawable == null) {
-            mExpandDrawable = getDrawable(getContext(), R.drawable.zhedie_zhankai);
-        }
-        if (mCollapseDrawable == null) {
-            mCollapseDrawable = getDrawable(getContext(), R.drawable.zhedie_shouqi);
-        }
+//        if (mExpandDrawable == null) {
+//            mExpandDrawable = getDrawable(getContext(), R.drawable.arrow_down);
+//        }
+//        if (mCollapseDrawable == null) {
+//            mCollapseDrawable = getDrawable(getContext(), R.drawable.arrow_right);
+//        }
 
         setOrientation(LinearLayout.VERTICAL);
         title = new RelativeLayout(context);
         int color = typedArray.getColor(R.styleable.ExpandableView_viewTitleBacColor, Color.WHITE);
         title.setOnClickListener(this);
         title.setBackgroundColor(color);
-//        title.setGravity(Gravity.CENTER_VERTICAL);
+        //title.setGravity(Gravity.CENTER_VERTICAL);
         title.setVerticalGravity(Gravity.CENTER_VERTICAL);
+        mTitleHeight = typedArray.getDimension(R.styleable.ExpandableView_titleHeight, mTitleHeight);
+        RelativeLayout.LayoutParams titleLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) mTitleHeight);
+        title.setLayoutParams(titleLayoutParams);
+
+        displayArrow = typedArray.getBoolean(R.styleable.ExpandableView_titleArrow, true);
         if (mTitleImage != null) {
             initTitleImage();
         }
-        mTitlt = typedArray.getString(R.styleable.ExpandableView_viewTitle);
+        mTitleName = typedArray.getString(R.styleable.ExpandableView_titleName);
         //可以自行调节字体的大小,sp转px貌似很大啊,所以使用px转dp
-        title_size = typedArray.getDimension(R.styleable.ExpandableView_viewTitleSize,
-                50);
-        title_size = DisplayUtil.px2dip(mContext, title_size);
-        title_color = typedArray.getColor(R.styleable.ExpandableView_viewTitleColor, getResources().getColor(R.color.color_909090));
-        line_color = typedArray.getColor(R.styleable.ExpandableView_viewTitleLineColor, getResources().getColor(R.color.color_bbbbbb));
-        if (mTitlt != null) {
+        title_size = typedArray.getDimension(R.styleable.ExpandableView_titleNameSize, 16);
+        title_color = typedArray.getColor(R.styleable.ExpandableView_titleNameColor, ContextCompat.getColor(mContext, R.color.title_color));
+        line_color = typedArray.getColor(R.styleable.ExpandableView_viewTitleLineColor, ContextCompat.getColor(mContext, R.color.line_color));
+        if (mTitleName != null) {
             initTitleText();
         }
         typedArray.recycle();
         LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);//定义一个LayoutParams
-
         layoutParams.setMargins(0, DisplayUtil.dip2px(context, 10), 0, 0);
         setLayoutParams(layoutParams);
 
-        if (!isShow) {
+        if (isCollapsed) {
             // 默认折叠
             addOnLayoutChangeListener(new OnLayoutChangeListener() {
                 @Override
@@ -236,9 +245,7 @@ public class ExpandableView extends LinearLayout implements View.OnClickListener
                         public void onAnimationEnd(Animation animation) {
                             mAnimating = false;
                             mCollapsed = false;
-                            if (mButton != null) {
-                                mButton.setImageDrawable(mCollapsed ? mExpandDrawable : mCollapseDrawable);
-                            }
+                            setTitleArrow();
                         }
 
                         @Override
@@ -253,6 +260,12 @@ public class ExpandableView extends LinearLayout implements View.OnClickListener
         }
     }
 
+    private void setTitleArrow() {
+        if (mArrowImg != null && mExpandDrawable != null && mCollapseDrawable != null) {
+            mArrowImg.setImageDrawable(mCollapsed ? mExpandDrawable : mCollapseDrawable);
+        }
+    }
+
     /**
      * 初始化标题题目
      */
@@ -260,32 +273,38 @@ public class ExpandableView extends LinearLayout implements View.OnClickListener
         int padLeft = DisplayUtil.dip2px(mContext, 25);
         int h = 0;
         if (mTitleImage != null) {
-            h = mTitleImage.getMinimumHeight();
+            h = mTitleImage.getMinimumWidth();
         }
         TextView tv = new TextView(mContext);
-        tv.setTextSize(title_size);
+        tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, title_size);
         tv.setTextColor(title_color);
-        tv.setText(mTitlt);
+        tv.setGravity(Gravity.CENTER_VERTICAL);
+        ViewGroup.LayoutParams titleNameLayoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        tv.setLayoutParams(titleNameLayoutParams);
+        tv.setText(mTitleName);
         int padTop = DisplayUtil.dip2px(mContext, 10);
         tv.setPadding(padLeft + h, padTop, 0, padTop);
         title.addView(tv);
-        mButton = new ImageButton(mContext);
-        mButton.setBackgroundColor(Color.WHITE);
-        mButton.setImageDrawable(mCollapsed ? mExpandDrawable : mCollapseDrawable);
-        h = mExpandDrawable.getMinimumHeight();
-        MarginLayoutParams mp = new MarginLayoutParams(h, h);  //item的宽高
-        mp.setMargins(0, 0, padLeft, 0);//分别是margin_top那四个属性
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(mp);
-        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        params.addRule(RelativeLayout.CENTER_VERTICAL);
-        mButton.setLayoutParams(params);
-        mButton.setOnClickListener(this);
-        title.addView(mButton);
+
+        if (displayArrow) {
+            mArrowImg = new ImageView(mContext);
+            mArrowImg.setScaleType(ImageView.ScaleType.CENTER);
+            mArrowImg.setBackgroundColor(Color.WHITE);
+            setTitleArrow();
+            MarginLayoutParams mp = new MarginLayoutParams(MarginLayoutParams.WRAP_CONTENT, MarginLayoutParams.WRAP_CONTENT);  //item的宽高
+            mp.setMargins(0, 0, mTitleLeftRightPadding, 0);//30 arrow的右边距
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(mp);
+            params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            params.addRule(RelativeLayout.CENTER_VERTICAL);
+            mArrowImg.setLayoutParams(params);
+            mArrowImg.setOnClickListener(this);
+            title.addView(mArrowImg);
+        }
 //        title.measure(0, 0);
 
         View line = new View(mContext);
         line.setBackgroundColor(line_color);
-        h = DisplayUtil.dip2px(mContext, 1);
+        h = DisplayUtil.dip2px(mContext, 0.3f);
         MarginLayoutParams mpLine = new MarginLayoutParams(LayoutParams.MATCH_PARENT, h);  //item的宽高
         title.measure(0, 0);
         h = title.getMeasuredHeight() - h;
@@ -296,7 +315,7 @@ public class ExpandableView extends LinearLayout implements View.OnClickListener
 
         View line1 = new View(mContext);
         line1.setBackgroundColor(line_color);
-        h = DisplayUtil.dip2px(mContext, 1);
+        h = DisplayUtil.dip2px(mContext, 0.3f);
         MarginLayoutParams mpLine1 = new MarginLayoutParams(LayoutParams.MATCH_PARENT, h);  //item的宽高
         RelativeLayout.LayoutParams mpLineparams1 = new RelativeLayout.LayoutParams(mpLine1);
         line1.setLayoutParams(mpLineparams1);
@@ -311,12 +330,11 @@ public class ExpandableView extends LinearLayout implements View.OnClickListener
      * 初始化标题图片
      */
     private void initTitleImage() {
-        int padLeft = DisplayUtil.dip2px(mContext, 20);
-        int h = mTitleImage.getMinimumHeight();
         ImageView imageView = new ImageView(mContext);
+        imageView.setScaleType(ImageView.ScaleType.CENTER);
         imageView.setImageDrawable(mTitleImage);
-        MarginLayoutParams mp = new MarginLayoutParams(h, h);  //item的宽高
-        mp.setMargins(padLeft, 0, 0, 0);
+        MarginLayoutParams mp = new MarginLayoutParams(MarginLayoutParams.WRAP_CONTENT, MarginLayoutParams.WRAP_CONTENT);  //item的宽高
+        mp.setMargins(mTitleLeftRightPadding, 0, 0, 0);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(mp);
         params.addRule(RelativeLayout.CENTER_VERTICAL);
         imageView.setLayoutParams(params);
@@ -324,7 +342,7 @@ public class ExpandableView extends LinearLayout implements View.OnClickListener
     }
 
     public void setmTitlt(String mTitlt) {
-        this.mTitlt = mTitlt;
+        this.mTitleName = mTitlt;
         initTitleText();
     }
 
@@ -385,11 +403,7 @@ public class ExpandableView extends LinearLayout implements View.OnClickListener
         @Override
         protected void applyTransformation(float interpolatedTime, Transformation t) {
             final int newHeight = (int) ((mEndHeight - mStartHeight) * interpolatedTime + mStartHeight);
-//            mTv.setMaxHeight(newHeight - mMarginBetweenTxtAndBottom);
             setMinimumHeight(newHeight);
-//            if (Float.compare(mAnimAlphaStart, 1.0f) != 0) {
-//                applyAlphaAnimation(mTv, mAnimAlphaStart + interpolatedTime * (1.0f - mAnimAlphaStart),mAnimationDuration);
-//            }
             mTargetView.getLayoutParams().height = newHeight;
             mTargetView.requestLayout();
         }
